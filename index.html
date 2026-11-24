@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pratham Kumar — Portfolio</title>
+<meta name="description" content="Pratham Kumar — first-year Computer Science student at NST-RU. Competitive programming, Python, C++.">
+<meta name="theme-color" content="#060709">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* =========================================================
+   1. TOKENS
+   ========================================================= */
+@property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+:root{
+  --bg:#060709; --bg-2:#0c0e12;
+  --panel:rgba(18,20,26,.55);
+  --line:rgba(201,206,214,.12); --line-2:rgba(201,206,214,.22);
+  --silver:#c9ced6; --silver-dim:#8b919c; --white:#f4f6f8;
+  --red:#e3262d; --red-deep:#7d0d12; --red-glow:rgba(227,38,45,.45);
+  --gold:#f2b544; --gold-soft:#ffd88a; --gold-glow:rgba(242,181,68,.45);
+  --f-display:'Orbitron',system-ui,sans-serif;
+  --f-ui:'Rajdhani',system-ui,sans-serif;
+  --f-body:'Inter',system-ui,-apple-system,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --pad:clamp(1.25rem,5vw,5rem);
+}
+
+/* =========================================================
+   2. BASE
+   ========================================================= */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--silver);
+  font-family:var(--f-body); font-size:16px; line-height:1.65;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1200px 700px at 85% -10%, rgba(227,38,45,.14), transparent 60%),
+    radial-gradient(900px 600px at -10% 40%, rgba(242,181,68,.07), transparent 60%),
+    radial-gradient(900px 700px at 110% 90%, rgba(227,38,45,.08), transparent 60%);
+  background-attachment:fixed;
+}
+body.locked{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+img,svg{display:block;max-width:100%}
+::selection{background:var(--red);color:#fff}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:2px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;top:-60px;left:1rem;z-index:2000;background:var(--gold);color:#000;padding:.6rem 1rem;font-family:var(--f-ui);font-weight:700;letter-spacing:.1em}
+.skip:focus{top:1rem}
+
+/* ambient layers */
+#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grid-overlay{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:72px 72px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 0%,transparent 70%);
+          mask-image:radial-gradient(ellipse at 50% 30%,#000 0%,transparent 70%);
+}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.65) 100%)}
+.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;background:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}
+main,footer,nav{position:relative;z-index:2}
+
+/* =========================================================
+   3. CURSOR
+   ========================================================= */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:3000;opacity:0;transition:opacity .3s}
+body.has-cursor .cursor-dot,body.has-cursor .cursor-ring{opacity:1}
+body.has-cursor, body.has-cursor a, body.has-cursor button{cursor:none}
+body.has-cursor input, body.has-cursor textarea{cursor:text}
+.cursor-dot{width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold),0 0 24px var(--gold-glow)}
+.cursor-ring{width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;border:1px solid rgba(242,181,68,.55);
+  transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),border-color .3s,background .3s,opacity .3s}
+.cursor-ring::before,.cursor-ring::after{content:'';position:absolute;background:var(--gold);opacity:.7}
+.cursor-ring::before{left:50%;top:-5px;width:1px;height:5px}
+.cursor-ring::after{top:50%;left:-5px;height:1px;width:5px}
+.cursor-ring.hover{width:64px;height:64px;margin:-32px 0 0 -32px;border-color:var(--red);background:rgba(227,38,45,.08)}
+
+/* =========================================================
+   4. LOADER
+   ========================================================= */
+#loader{position:fixed;inset:0;z-index:5000;background:#030304;display:grid;place-items:center;transition:opacity .9s var(--ease),visibility .9s}
+#loader.done{opacity:0;visibility:hidden}
+.loader-inner{display:grid;place-items:center;gap:2rem;text-align:center}
+.loader-core{width:180px;height:180px;position:relative}
+.loader-core svg{width:100%;height:100%;overflow:visible}
+.loader-core .lc-spin{transform-origin:100px 100px;animation:spin 3s linear infinite}
+.loader-core .lc-spin-r{transform-origin:100px 100px;animation:spin 5s linear infinite reverse}
+.loader-core .lc-glow{animation:corePulse 1.6s ease-in-out infinite;transform-origin:100px 100px}
+.loader-pct{font-family:var(--f-display);font-size:2.4rem;font-weight:700;color:var(--white);letter-spacing:.15em}
+.loader-pct small{font-size:.9rem;color:var(--gold);margin-left:.2rem}
+.loader-msg{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.3em;color:var(--silver-dim);height:1.2em}
+.loader-bar{width:220px;height:2px;background:var(--line);overflow:hidden}
+.loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--gold));box-shadow:0 0 12px var(--gold)}
+
+/* =========================================================
+   5. NAV
+   ========================================================= */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem var(--pad);transition:padding .4s var(--ease),background .4s,border-color .4s;border-bottom:1px solid transparent}
+.nav.scrolled{padding:.75rem var(--pad);background:rgba(6,7,9,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--line)}
+.brand{display:flex;align-items:center;gap:.75rem;font-family:var(--f-display);font-weight:700;letter-spacing:.2em;color:var(--white);font-size:.85rem}
+.brand-mark{width:38px;height:38px;position:relative;display:grid;place-items:center}
+.brand-mark svg{position:absolute;inset:0;animation:spin 14s linear infinite}
+.brand-mark span{font-size:.7rem;color:var(--gold)}
+.nav-links{display:flex;gap:.25rem;list-style:none}
+.nav-links a{font-family:var(--f-ui);font-weight:600;font-size:.9rem;letter-spacing:.18em;text-transform:uppercase;padding:.5rem .9rem;position:relative;color:var(--silver-dim);transition:color .3s}
+.nav-links a::before{content:attr(data-num);font-family:var(--f-mono);font-size:.6rem;color:var(--red);margin-right:.4rem;letter-spacing:0}
+.nav-links a::after{content:'';position:absolute;left:.9rem;right:.9rem;bottom:.2rem;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.nav-links a:hover,.nav-links a[aria-current="true"]{color:var(--white)}
+.nav-links a:hover::after,.nav-links a[aria-current="true"]::after{transform:scaleX(1)}
+.menu-btn{display:none;width:44px;height:44px;position:relative}
+.menu-btn span{position:absolute;left:10px;right:10px;height:2px;background:var(--silver);transition:transform .4s var(--ease),opacity .3s}
+.menu-btn span:nth-child(1){top:15px}.menu-btn span:nth-child(2){top:21px;right:18px;background:var(--gold)}.menu-btn span:nth-child(3){top:27px}
+.menu-open .menu-btn span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menu-open .menu-btn span:nth-child(2){opacity:0}
+.menu-open .menu-btn span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* =========================================================
+   6. SHARED UI
+   ========================================================= */
+.container{max-width:1240px;margin:0 auto}
+section{padding:clamp(6rem,12vw,9.5rem) var(--pad);position:relative}
+.s-head{margin-bottom:clamp(2.5rem,6vw,4.5rem);display:grid;gap:1rem}
+.s-label{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.3em;color:var(--gold);display:flex;align-items:center;gap:1rem;text-transform:uppercase}
+.s-label::after{content:'';height:1px;width:80px;background:linear-gradient(90deg,var(--gold),transparent)}
+.s-title{font-family:var(--f-display);font-weight:900;font-size:clamp(2.1rem,6vw,4.2rem);line-height:1.02;color:var(--white);letter-spacing:.02em;text-transform:uppercase}
+.s-title .accent{background:linear-gradient(100deg,var(--red) 10%,var(--gold) 90%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.s-sub{max-width:560px;color:var(--silver-dim);font-size:1.02rem}
+.holo{position:relative;background:linear-gradient(150deg,rgba(255,255,255,.055),rgba(255,255,255,.012) 45%,rgba(227,38,45,.03));
+  border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.corners::before{content:'';position:absolute;inset:-1px;pointer-events:none;z-index:2;--c:var(--gold);--l:14px;
+  background:
+   linear-gradient(var(--c),var(--c)) top left/var(--l) 2px no-repeat, linear-gradient(var(--c),var(--c)) top left/2px var(--l) no-repeat,
+   linear-gradient(var(--c),var(--c)) top right/var(--l) 2px no-repeat, linear-gradient(var(--c),var(--c)) top right/2px var(--l) no-repeat,
+   linear-gradient(var(--c),var(--c)) bottom left/var(--l) 2px no-repeat, linear-gradient(var(--c),var(--c)) bottom left/2px var(--l) no-repeat,
+   linear-gradient(var(--c),var(--c)) bottom right/var(--l) 2px no-repeat, linear-gradient(var(--c),var(--c)) bottom right/2px var(--l) no-repeat;
+  transition:--l .4s}
+.mono{font-family:var(--f-mono)}
+
+/* buttons */
+.btn{--bg:transparent;display:inline-flex;align-items:center;gap:.8rem;position:relative;padding:1.05rem 1.8rem;
+  font-family:var(--f-ui);font-weight:700;font-size:.95rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white);
+  border:1px solid var(--line-2);background:var(--bg);overflow:hidden;isolation:isolate;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  transition:transform .35s var(--ease),border-color .3s,box-shadow .3s,color .3s}
+.btn::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--red),#b3161c 60%,var(--gold));transform:translateX(-101%);transition:transform .5s var(--ease)}
+.btn:hover::before{transform:none}
+.btn:hover{border-color:transparent;box-shadow:0 0 40px var(--red-glow)}
+.btn svg{width:18px;height:18px;transition:transform .4s var(--ease)}
+.btn:hover svg{transform:translateX(4px)}
+.btn-primary{--bg:linear-gradient(100deg,rgba(227,38,45,.9),rgba(160,18,24,.9));border-color:rgba(227,38,45,.6);box-shadow:0 0 30px rgba(227,38,45,.25)}
+.btn-primary::before{background:linear-gradient(100deg,var(--gold),var(--gold-soft))}
+.btn-primary:hover{color:#120a00;box-shadow:0 0 50px var(--gold-glow)}
+.magnetic{transition:transform .35s var(--ease)}
+
+/* reveal */
+.js [data-reveal]{opacity:0;transform:translateY(40px);filter:blur(6px);transition:opacity 1s var(--ease),transform 1.15s var(--ease),filter 1s var(--ease);transition-delay:var(--d,0s)}
+.js [data-reveal="left"]{transform:translateX(-50px)}
+.js [data-reveal="right"]{transform:translateX(50px)}
+.js [data-reveal="scale"]{transform:scale(.92)}
+.js [data-reveal].in{opacity:1;transform:none;filter:none}
+.js .s-title[data-reveal]{opacity:1;filter:none;transform:none;clip-path:polygon(-5% -20%,-5% -20%,-5% 130%,-5% 130%);transition:clip-path 1.3s var(--ease);transition-delay:var(--d,0s)}
+.js .s-title[data-reveal].in{clip-path:polygon(-5% -20%,105% -20%,105% 130%,-5% 130%)}
+
+/* =========================================================
+   7. HERO
+   ========================================================= */
+.hero{min-height:100vh;min-height:100svh;display:grid;align-items:center;padding-top:7rem;padding-bottom:6rem;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:2rem;max-width:1320px;margin:0 auto;width:100%}
+.hero-hud-top{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.18em;color:var(--silver-dim);margin-bottom:2.2rem;opacity:0}
+.hero-hud-top b{color:var(--gold);font-weight:500}
+.hero-hud-top .live{color:#7dffa8}
+.hero-hud-top .live::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:.5rem;box-shadow:0 0 8px currentColor;animation:blink 1.4s infinite}
+.hero-kicker{font-family:var(--f-display);font-weight:500;font-size:clamp(.75rem,1.6vw,.95rem);letter-spacing:.55em;color:var(--gold);margin-bottom:1.4rem;display:flex;flex-wrap:wrap}
+.hero-kicker .ch{display:inline-block;opacity:0;transform:translateY(10px);filter:blur(4px)}
+.hero-kicker .sp{width:.6em}
+.hero-name{font-family:var(--f-display);font-weight:900;line-height:.92;letter-spacing:.01em;text-transform:uppercase;color:var(--white);font-size:clamp(3rem,7.4vw,7rem);margin-bottom:1.6rem}
+.hero-name .line{display:block;overflow:hidden;padding-bottom:.06em;white-space:nowrap}
+.hero-name .ch{display:inline-block;transform:translateY(110%) rotate(6deg);opacity:0}
+.hero-name .line-2 .ch{color:transparent;-webkit-text-stroke:1.5px var(--gold);background:linear-gradient(100deg,var(--gold) 0%,var(--gold-soft) 50%,var(--red) 100%);-webkit-background-clip:text;background-clip:text}
+.hero-name .line-2.filled .ch{color:transparent;-webkit-text-stroke:0}
+.hero-name .line-1{position:relative}
+.hero-name .flare{position:absolute;top:0;bottom:0;width:30%;left:-40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);mix-blend-mode:overlay;pointer-events:none}
+.hero-sub{font-family:var(--f-ui);font-weight:600;font-size:clamp(1rem,2vw,1.3rem);letter-spacing:.12em;text-transform:uppercase;color:var(--silver);display:flex;flex-wrap:wrap;gap:.35rem .9rem;align-items:center;margin-bottom:2.6rem}
+.hero-sub span{opacity:0;transform:translateY(12px)}
+.hero-sub i{width:6px;height:6px;background:var(--red);transform:rotate(45deg);box-shadow:0 0 10px var(--red);opacity:0}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:1rem}
+.hero-ctas .btn{opacity:0;transform:translateY(16px)}
+
+/* hero core */
+.core-wrap{position:relative;width:min(560px,100%);aspect-ratio:1;justify-self:center;opacity:0;transform:scale(.85)}
+.core-wrap svg{width:100%;height:100%;overflow:visible}
+.r-slow{transform-origin:300px 300px;animation:spin 60s linear infinite}
+.r-mid{transform-origin:300px 300px;animation:spin 24s linear infinite reverse}
+.r-fast{transform-origin:300px 300px;animation:spin 12s linear infinite}
+.r-hex{transform-origin:300px 300px;animation:spin 40s linear infinite reverse}
+.core-glow{transform-origin:300px 300px;animation:corePulse 3.2s ease-in-out infinite}
+.core-sweep{position:absolute;inset:8%;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 290deg,rgba(242,181,68,.22) 360deg);
+  -webkit-mask:radial-gradient(circle,transparent 30%,#000 31%,#000 70%,transparent 71%);mask:radial-gradient(circle,transparent 30%,#000 31%,#000 70%,transparent 71%);animation:spin 5s linear infinite}
+.wave{position:absolute;inset:30%;border-radius:50%;border:1px solid rgba(242,181,68,.5);animation:wave 4.5s var(--ease) infinite;opacity:0}
+.wave:nth-child(2){animation-delay:1.5s;border-color:rgba(227,38,45,.5)}
+.wave:nth-child(3){animation-delay:3s}
+.callout{position:absolute;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.18em;color:var(--silver-dim);padding:.55rem .75rem;border:1px solid var(--line);background:rgba(10,11,14,.6);backdrop-filter:blur(6px);white-space:nowrap;line-height:1.6}
+.callout b{color:var(--gold);font-weight:500;display:block}
+.callout.c1{top:6%;right:-2%}.callout.c2{bottom:12%;left:-4%}.callout.c3{bottom:2%;right:6%}
+.callout::before{content:'';position:absolute;width:40px;height:1px;background:var(--line-2)}
+.callout.c1::before{left:-40px;top:50%}.callout.c2::before{right:-40px;top:50%}.callout.c3::before{top:-1px;left:-40px;transform:rotate(-30deg);transform-origin:right}
+
+.scroll-ind{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:grid;justify-items:center;gap:.7rem;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.35em;color:var(--silver-dim);opacity:0}
+.scroll-ind .mouse{width:22px;height:36px;border:1px solid var(--line-2);border-radius:12px;position:relative}
+.scroll-ind .mouse::after{content:'';position:absolute;left:50%;top:7px;width:2px;height:7px;margin-left:-1px;background:var(--gold);border-radius:2px;animation:scrollDot 1.8s var(--ease) infinite}
+
+/* hero intro sequence (after loader) */
+.loaded .hero-hud-top{animation:fadeUp .9s var(--ease) .1s forwards}
+.loaded .hero-kicker .ch{animation:kick .8s var(--ease) forwards;animation-delay:calc(.2s + var(--i) * .035s)}
+.loaded .hero-name .ch{animation:rise 1.1s var(--ease) forwards;animation-delay:calc(.9s + var(--i) * .06s)}
+.loaded .hero-name .flare{animation:flare 1.4s ease-in-out 2.1s forwards}
+.loaded .hero-sub span,.loaded .hero-sub i{animation:fadeUp .8s var(--ease) forwards;animation-delay:calc(1.9s + var(--i) * .15s)}
+.loaded .hero-ctas .btn{animation:fadeUp .9s var(--ease) forwards;animation-delay:calc(2.4s + var(--i) * .12s)}
+.loaded .core-wrap{animation:coreIn 1.8s var(--ease) .4s forwards}
+.loaded .scroll-ind{animation:fadeIn 1s 3s forwards}
+
+/* =========================================================
+   8. ABOUT — dossier
+   ========================================================= */
+.dossier{display:grid;grid-template-columns:340px 1fr;gap:0;overflow:hidden}
+.dossier-side{padding:2.5rem 2rem;border-right:1px solid var(--line);display:grid;gap:1.8rem;align-content:start;justify-items:center;background:linear-gradient(180deg,rgba(227,38,45,.07),transparent 60%)}
+.avatar{width:220px;aspect-ratio:1;position:relative;display:grid;place-items:center}
+.avatar .ring{position:absolute;inset:0;animation:spin 20s linear infinite}
+.avatar .hex{width:76%;aspect-ratio:1;clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%);
+  background:radial-gradient(circle at 50% 35%,rgba(242,181,68,.35),transparent 60%),linear-gradient(160deg,#1b1d24,#0b0c10);
+  display:grid;place-items:center;position:relative;overflow:hidden}
+.avatar .hex img{width:100%;height:100%;object-fit:cover}
+.avatar .hex span{font-family:var(--f-display);font-weight:900;font-size:3.2rem;background:linear-gradient(180deg,var(--white),var(--silver-dim));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.05em}
+.avatar .hex::after{content:'';position:absolute;left:0;right:0;height:30%;background:linear-gradient(180deg,transparent,rgba(242,181,68,.35),transparent);animation:scan 3s linear infinite}
+.id-tag{text-align:center;display:grid;gap:.2rem}
+.id-tag .codename{font-family:var(--f-display);font-weight:700;color:var(--white);letter-spacing:.2em;font-size:1rem}
+.id-tag .clear{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.25em;color:var(--red)}
+.hazard{width:100%;height:10px;background:repeating-linear-gradient(-45deg,var(--gold) 0 8px,transparent 8px 16px);opacity:.5}
+.dossier-main{padding:2.5rem clamp(1.5rem,4vw,3rem);display:grid;gap:2rem}
+.dossier-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.22em;color:var(--silver-dim);padding-bottom:1rem;border-bottom:1px dashed var(--line-2)}
+.dossier-head b{color:var(--gold);font-weight:500}
+.about-lead{font-size:clamp(1.15rem,2.2vw,1.45rem);line-height:1.55;color:var(--white);font-weight:300}
+.about-lead strong{font-weight:500;color:var(--gold-soft)}
+.about-body{color:var(--silver-dim);max-width:62ch}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.field{background:rgba(8,9,12,.85);padding:1rem 1.1rem;display:grid;gap:.25rem;transition:background .3s}
+.field:hover{background:rgba(227,38,45,.08)}
+.field dt{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.25em;color:var(--silver-dim);text-transform:uppercase}
+.field dd{font-family:var(--f-ui);font-weight:700;font-size:1.1rem;color:var(--white);letter-spacing:.05em}
+.field dd.on{color:#7dffa8}
+.field dd.on::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:.5rem;box-shadow:0 0 8px currentColor;animation:blink 1.4s infinite;vertical-align:middle}
+
+/* =========================================================
+   9. SKILLS
+   ========================================================= */
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;perspective:1200px}
+[data-tilt]{transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease),border-color .4s,box-shadow .4s;transform-style:preserve-3d;will-change:transform}
+.tilting{transition:transform .08s linear,border-color .4s,box-shadow .4s}
+.glare{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%),rgba(242,181,68,.14),transparent 45%);z-index:1}
+[data-tilt]:hover .glare{opacity:1}
+.skill-card{padding:2rem 1.8rem 1.8rem;display:grid;gap:1.1rem;align-content:start;min-height:100%;overflow:hidden}
+.skill-card:hover{border-color:rgba(242,181,68,.45);box-shadow:0 30px 80px -30px rgba(227,38,45,.5),inset 0 0 60px rgba(242,181,68,.05)}
+.skill-card:hover.corners::before{--l:28px}
+.skill-top{display:flex;justify-content:space-between;align-items:center;font-family:var(--f-mono);font-size:.65rem;letter-spacing:.22em;color:var(--silver-dim)}
+.skill-top .st{color:#7dffa8}
+.skill-icon{width:110px;height:110px;position:relative;display:grid;place-items:center;margin:.6rem 0 .4rem;transform:translateZ(40px)}
+.skill-icon .orbit{position:absolute;inset:0;transition:transform 1.2s var(--ease)}
+.skill-card:hover .skill-icon .orbit{transform:rotate(180deg)}
+.skill-icon .glyph{font-family:var(--f-display);font-weight:900;font-size:1.7rem;color:var(--white);text-shadow:0 0 20px var(--gold-glow);position:relative}
+.skill-icon svg.g{width:52px;height:52px;position:relative}
+.skill-card h3{font-family:var(--f-display);font-size:1.35rem;color:var(--white);letter-spacing:.05em;transform:translateZ(30px)}
+.skill-card p{color:var(--silver-dim);font-size:.95rem;transform:translateZ(20px)}
+.tags{display:flex;flex-wrap:wrap;gap:.45rem;list-style:none}
+.tags li{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.08em;padding:.32rem .6rem;border:1px solid var(--line-2);color:var(--silver);background:rgba(255,255,255,.02);transition:border-color .3s,color .3s}
+.skill-card:hover .tags li{border-color:rgba(242,181,68,.35);color:var(--gold-soft)}
+.charge{margin-top:.6rem;height:4px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
+.charge::after{content:'';position:absolute;top:0;bottom:0;width:40%;left:-40%;background:linear-gradient(90deg,transparent,var(--red),var(--gold),transparent);box-shadow:0 0 14px var(--gold);animation:charge 2.6s var(--ease) infinite}
+.skill-card:nth-child(2) .charge::after{animation-delay:.6s}.skill-card:nth-child(3) .charge::after{animation-delay:1.2s}
+.charge-label{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.25em;color:var(--silver-dim)}
+.charge-label b{color:var(--gold);font-weight:500}
+
+/* =========================================================
+   10. PROJECT
+   ========================================================= */
+.project{display:grid;grid-template-columns:1fr 1.1fr;overflow:hidden;isolation:isolate}
+.project::after{content:'';position:absolute;inset:0;padding:1px;pointer-events:none;z-index:3;
+  background:conic-gradient(from var(--ang),transparent 0 62%,var(--gold) 75%,var(--red) 85%,transparent 95%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:angSpin 6s linear infinite}
+.project .holo-lines{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.35;background:repeating-linear-gradient(0deg,rgba(242,181,68,.06) 0 1px,transparent 1px 4px);animation:holoShift 8s linear infinite}
+.project-info{padding:clamp(1.75rem,4vw,3.2rem);display:grid;gap:1.4rem;align-content:start;position:relative;z-index:1}
+.proj-tag{display:flex;gap:.8rem;align-items:center;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.25em;color:var(--gold)}
+.proj-tag span{padding:.25rem .55rem;border:1px solid rgba(242,181,68,.4)}
+.proj-title{font-family:var(--f-display);font-weight:900;font-size:clamp(2.4rem,6vw,4rem);line-height:1;color:var(--white);letter-spacing:.04em;position:relative}
+.proj-title::after{content:attr(data-text);position:absolute;left:0;top:0;color:var(--red);opacity:0;mix-blend-mode:screen;transform:translate(3px,0);clip-path:inset(40% 0 35% 0)}
+.project:hover .proj-title::after{animation:glitch .6s steps(2) 2}
+.placeholder{color:var(--silver-dim);font-style:italic;border-left:2px dashed rgba(242,181,68,.45);padding:.2rem 0 .2rem 1rem}
+.placeholder b{font-style:normal;color:var(--gold-soft);font-weight:500}
+.proj-meta{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.proj-meta div{display:grid;grid-template-columns:110px 1fr;background:rgba(8,9,12,.85);padding:.7rem 1rem;font-size:.9rem}
+.proj-meta dt{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.2em;color:var(--silver-dim);padding-top:.15rem}
+.proj-meta dd{color:var(--silver);font-style:italic}
+.proj-actions{display:flex;flex-wrap:wrap;gap:1rem}
+.terminal{position:relative;z-index:1;margin:clamp(1rem,2.5vw,1.6rem);margin-left:0;border:1px solid var(--line-2);background:rgba(4,5,7,.85);display:flex;flex-direction:column;box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 60px -20px rgba(242,181,68,.25)}
+.term-bar{display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:.7rem;color:var(--silver-dim);letter-spacing:.1em}
+.term-bar i{width:9px;height:9px;transform:rotate(45deg)}
+.term-bar i:nth-child(1){background:var(--red)}.term-bar i:nth-child(2){background:var(--gold)}.term-bar i:nth-child(3){background:var(--silver-dim)}
+.term-bar span{margin-left:auto}
+.term-body{padding:1.25rem;display:grid;gap:1rem;font-family:var(--f-mono);font-size:.82rem;flex:1}
+.term-body label{color:var(--gold);font-size:.7rem;letter-spacing:.2em}
+.term-input{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--line-2);color:var(--white);font-family:var(--f-mono);font-size:.9rem;padding:.8rem .9rem;resize:none;min-height:72px;transition:border-color .3s,box-shadow .3s}
+.term-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,181,68,.15)}
+.tok-out{display:flex;flex-wrap:wrap;gap:.35rem;min-height:3rem;align-content:flex-start}
+.tok{padding:.18rem .45rem;border:1px solid;font-size:.8rem;animation:tokIn .45s var(--ease) both;white-space:pre}
+.t0{color:#ff8a8f;border-color:rgba(227,38,45,.5);background:rgba(227,38,45,.12)}
+.t1{color:var(--gold-soft);border-color:rgba(242,181,68,.5);background:rgba(242,181,68,.1)}
+.t2{color:#e3e7ec;border-color:rgba(201,206,214,.4);background:rgba(201,206,214,.07)}
+.t3{color:#ffb38a;border-color:rgba(255,140,70,.45);background:rgba(255,140,70,.09)}
+.t4{color:#ffe1a8;border-color:rgba(255,216,138,.35);background:rgba(255,216,138,.06)}
+.t5{color:#c7a3a5;border-color:rgba(199,163,165,.35);background:rgba(199,163,165,.07)}
+.tok-ids{color:var(--silver-dim);font-size:.72rem;word-break:break-all;line-height:1.7;max-height:5.2em;overflow:hidden}
+.tok-ids b{color:var(--red);font-weight:500}
+.tok-stats{display:flex;gap:1.5rem;font-size:.7rem;letter-spacing:.15em;color:var(--silver-dim);border-top:1px dashed var(--line-2);padding-top:.8rem}
+.tok-stats b{color:var(--gold);font-weight:500;font-size:.95rem;margin-left:.35rem}
+.term-note{font-size:.62rem;color:var(--silver-dim);opacity:.7;letter-spacing:.05em}
+
+/* =========================================================
+   11. HOBBIES
+   ========================================================= */
+.hobby-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.hobby{padding:2rem 1.5rem 1.75rem;display:grid;gap:1rem;align-content:start;overflow:hidden;min-height:310px;cursor:default}
+.hobby::after{content:'';position:absolute;inset:0;z-index:0;background:linear-gradient(0deg,rgba(227,38,45,.35),rgba(242,181,68,.05) 60%,transparent);transform:translateY(100%);transition:transform .7s var(--ease)}
+.hobby:hover::after,.hobby:focus-within::after{transform:none}
+.hobby>*{position:relative;z-index:2}
+.hobby:hover{border-color:rgba(227,38,45,.5);box-shadow:0 30px 70px -30px rgba(227,38,45,.6)}
+.hobby-num{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.25em;color:var(--silver-dim);display:flex;justify-content:space-between}
+.hobby-icon{width:84px;height:84px;margin:.8rem 0;color:var(--silver);transition:transform .7s var(--ease),color .4s,filter .4s;transform:translateZ(50px)}
+.hobby:hover .hobby-icon{color:var(--gold);filter:drop-shadow(0 0 14px var(--gold-glow));transform:translateZ(50px) translateY(-8px) rotate(-8deg)}
+.hobby-icon .ball{transition:transform .7s var(--ease)}
+.hobby:hover .hobby-icon .ball{transform:translate(-6px,-10px)}
+.hobby h3{font-family:var(--f-display);font-size:1.15rem;color:var(--white);letter-spacing:.06em;text-transform:uppercase}
+.hobby p{font-size:.92rem;color:var(--silver-dim);transition:color .4s}
+.hobby:hover p{color:var(--silver)}
+.hobby .bar{height:2px;background:var(--line-2);position:relative;overflow:hidden;margin-top:auto}
+.hobby .bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--red),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .1s}
+.hobby:hover .bar::after{transform:scaleX(1)}
+
+/* =========================================================
+   12. CONTACT
+   ========================================================= */
+.contact-wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:1.5rem;align-items:stretch}
+.comms{padding:clamp(1.75rem,4vw,3rem);display:grid;gap:1.8rem;align-content:start;overflow:hidden}
+.radar{position:absolute;right:-120px;top:-120px;width:360px;height:360px;border-radius:50%;pointer-events:none;opacity:.5;
+  background:repeating-radial-gradient(circle,transparent 0 39px,rgba(242,181,68,.18) 39px 40px)}
+.radar::after{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 300deg,rgba(227,38,45,.35) 360deg);animation:spin 4s linear infinite}
+.comms h3{font-family:var(--f-display);font-weight:700;font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.15;color:var(--white);max-width:16ch;position:relative}
+.email-row{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;position:relative}
+.email-link{font-family:var(--f-ui);font-weight:600;font-size:clamp(1.05rem,2.4vw,1.5rem);color:var(--gold-soft);letter-spacing:.04em;border-bottom:1px dashed rgba(242,181,68,.5);word-break:break-all}
+.email-link:hover{color:var(--white)}
+.copy-btn{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.2em;padding:.5rem .8rem;border:1px solid var(--line-2);color:var(--silver);transition:border-color .3s,color .3s,background .3s}
+.copy-btn:hover{border-color:var(--gold);color:var(--gold)}
+.socials{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;position:relative}
+.social{display:flex;align-items:center;gap:.9rem;padding:1rem 1.1rem;border:1px solid var(--line);background:rgba(8,9,12,.7);position:relative;overflow:hidden;transition:border-color .3s,transform .35s var(--ease)}
+.social::before{content:'';position:absolute;inset:0;background:linear-gradient(100deg,rgba(227,38,45,.25),rgba(242,181,68,.12));transform:translateX(-101%);transition:transform .5s var(--ease)}
+.social:hover::before{transform:none}
+.social:hover{border-color:rgba(242,181,68,.5)}
+.social svg{width:22px;height:22px;flex:none;position:relative;color:var(--gold)}
+.social span{position:relative;display:grid;line-height:1.25}
+.social b{font-family:var(--f-ui);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--white);font-size:.95rem}
+.social small{font-family:var(--f-mono);font-size:.62rem;color:var(--silver-dim);letter-spacing:.05em}
+.social .arrow{margin-left:auto;width:16px;height:16px;color:var(--silver-dim);transition:transform .4s var(--ease),color .3s}
+.social:hover .arrow{transform:translate(3px,-3px);color:var(--white)}
+.transmit{padding:clamp(1.75rem,4vw,3rem);display:grid;gap:1.1rem;align-content:start}
+.transmit-head{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.22em;color:var(--silver-dim);padding-bottom:.8rem;border-bottom:1px dashed var(--line-2)}
+.transmit-head b{color:var(--red);font-weight:500}
+.f-group{display:grid;gap:.4rem}
+.f-group label{font-family:var(--f-mono);font-size:.65rem;letter-spacing:.25em;color:var(--gold)}
+.f-group input,.f-group textarea{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--line-2);color:var(--white);font-family:var(--f-body);font-size:1rem;padding:.9rem 1rem;transition:border-color .3s,box-shadow .3s,background .3s}
+.f-group textarea{min-height:140px;resize:vertical}
+.f-group input:focus,.f-group textarea:focus{outline:none;border-color:var(--gold);background:rgba(242,181,68,.04);box-shadow:0 0 0 3px rgba(242,181,68,.12)}
+.f-note{font-size:.75rem;color:var(--silver-dim)}
+
+/* =========================================================
+   13. FOOTER / DOCK / TOP / WIPE / TOAST
+   ========================================================= */
+footer{padding:2.5rem var(--pad) 7rem;border-top:1px solid var(--line)}
+.foot{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;font-family:var(--f-mono);font-size:.7rem;letter-spacing:.18em;color:var(--silver-dim)}
+.foot b{color:var(--gold);font-weight:500}
+
+.audio-dock{position:fixed;left:1.25rem;bottom:1.25rem;z-index:150;display:flex;align-items:center;gap:.7rem;padding:.5rem .6rem .5rem .5rem;
+  background:rgba(8,9,12,.75);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.dock-btn{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line-2);color:var(--silver);transition:border-color .3s,color .3s,background .3s}
+.dock-btn:hover{border-color:var(--gold);color:var(--gold)}
+.dock-btn svg{width:16px;height:16px}
+.dock-btn[aria-pressed="true"]{background:rgba(242,181,68,.12);border-color:var(--gold);color:var(--gold)}
+#music-toggle .i-pause,#music-toggle[aria-pressed="true"] .i-play{display:none}
+#music-toggle[aria-pressed="true"] .i-pause{display:block}
+#mute-toggle .i-off,#mute-toggle[aria-pressed="true"] .i-on{display:none}
+#mute-toggle[aria-pressed="true"] .i-off{display:block}
+#mute-toggle[aria-pressed="true"]{background:rgba(227,38,45,.12);border-color:var(--red);color:var(--red)}
+#viz{width:72px;height:28px}
+.dock-meta{display:grid;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.22em;line-height:1.5;color:var(--silver-dim);min-width:58px}
+.dock-meta b{color:var(--gold);font-weight:500}
+
+.to-top{position:fixed;right:1.25rem;bottom:1.25rem;z-index:150;width:54px;height:54px;display:grid;place-items:center;border-radius:50%;
+  background:rgba(8,9,12,.8);backdrop-filter:blur(10px);border:1px solid var(--line);opacity:0;transform:translateY(20px) scale(.9);pointer-events:none;
+  transition:opacity .4s,transform .5s var(--ease),box-shadow .3s}
+.to-top.show{opacity:1;transform:none;pointer-events:auto}
+.to-top:hover{box-shadow:0 0 30px var(--gold-glow)}
+.to-top svg.ring{position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);transform:rotate(-90deg)}
+.to-top svg.ring circle{fill:none;stroke-width:2}
+.to-top .arr{width:18px;height:18px;color:var(--gold);transition:transform .4s var(--ease)}
+.to-top:hover .arr{transform:translateY(-3px)}
+
+.wipe{position:fixed;inset:0;z-index:900;pointer-events:none;display:grid;place-items:center;transform:translateX(-101%);
+  background:linear-gradient(100deg,var(--red-deep) 0%,#050506 22%,#050506 78%,#5a3a07 100%)}
+.wipe::before,.wipe::after{content:'';position:absolute;top:0;bottom:0;width:4px}
+.wipe::before{right:0;background:var(--gold);box-shadow:0 0 30px var(--gold)}
+.wipe::after{left:0;background:var(--red);box-shadow:0 0 30px var(--red)}
+.wipe.run{animation:wipe .9s cubic-bezier(.76,0,.24,1) forwards}
+.wipe-text{font-family:var(--f-display);font-size:clamp(.8rem,2vw,1.1rem);letter-spacing:.5em;color:var(--silver-dim)}
+.wipe-text b{color:var(--gold);font-weight:700}
+
+.toast{position:fixed;left:50%;bottom:5.5rem;transform:translate(-50%,20px);z-index:1200;opacity:0;pointer-events:none;
+  font-family:var(--f-mono);font-size:.75rem;letter-spacing:.2em;color:#120a00;background:var(--gold);padding:.7rem 1.2rem;transition:opacity .3s,transform .4s var(--ease)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* =========================================================
+   14. KEYFRAMES
+   ========================================================= */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes angSpin{to{--ang:360deg}}
+@keyframes corePulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.07);opacity:1}}
+@keyframes wave{0%{transform:scale(.6);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes scan{0%{top:-30%}100%{top:100%}}
+@keyframes scrollDot{0%{transform:translateY(0);opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
+@keyframes fadeUp{to{opacity:1;transform:none}}
+@keyframes fadeIn{to{opacity:1}}
+@keyframes kick{to{opacity:1;transform:none;filter:none}}
+@keyframes rise{to{opacity:1;transform:none}}
+@keyframes flare{0%{left:-40%}100%{left:120%}}
+@keyframes coreIn{0%{opacity:0;transform:scale(.85) rotate(-20deg)}100%{opacity:1;transform:none}}
+@keyframes charge{0%{left:-40%}100%{left:100%}}
+@keyframes holoShift{to{background-position:0 120px}}
+@keyframes glitch{0%{opacity:.8;transform:translate(4px,-1px);clip-path:inset(20% 0 55% 0)}50%{opacity:.8;transform:translate(-3px,1px);clip-path:inset(60% 0 10% 0)}100%{opacity:0}}
+@keyframes tokIn{from{opacity:0;transform:translateY(6px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes wipe{0%{transform:translateX(-101%)}42%,58%{transform:translateX(0)}100%{transform:translateX(101%)}}
+
+/* =========================================================
+   15. RESPONSIVE
+   ========================================================= */
+@media (max-width:1080px){
+  .skills-grid{grid-template-columns:1fr 1fr}
+  .skills-grid>:last-child{grid-column:1/-1}
+  .hobby-grid{grid-template-columns:1fr 1fr}
+  .dossier{grid-template-columns:280px 1fr}
+  .fields{grid-template-columns:1fr 1fr}
+  .project{grid-template-columns:1fr}
+  .terminal{margin:0 clamp(1rem,2.5vw,1.6rem) clamp(1rem,2.5vw,1.6rem)}
+  .contact-wrap{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  .nav-links{position:fixed;inset:0;flex-direction:column;justify-content:center;align-items:center;gap:1rem;background:rgba(5,6,8,.97);
+    opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+  .menu-open .nav-links{opacity:1;visibility:visible}
+  .nav-links a{font-size:1.4rem}
+  .menu-btn{display:block;z-index:2}
+  .hero{padding-top:6rem}
+  .hero-grid{grid-template-columns:1fr;text-align:left}
+  .core-wrap{order:-1;width:min(340px,78vw);margin-bottom:-1rem}
+  .callout{display:none}
+  .hero-name{font-size:clamp(2.6rem,14vw,6rem)}
+  .hud-xy{display:none}
+  .dossier{grid-template-columns:1fr}
+  .dossier-side{border-right:0;border-bottom:1px solid var(--line);grid-template-columns:auto 1fr;justify-items:start;align-items:center;padding:1.75rem}
+  .avatar{width:130px}
+  .avatar .hex span{font-size:2rem}
+  .id-tag{text-align:left}
+  .hazard{grid-column:1/-1}
+  .scroll-ind{display:none}
+}
+@media (max-width:600px){
+  .skills-grid,.hobby-grid,.socials{grid-template-columns:1fr}
+  .hobby{min-height:0}
+  .fields{grid-template-columns:1fr 1fr}
+  .proj-meta div{grid-template-columns:1fr;gap:.2rem}
+  .hero-ctas .btn{width:100%;justify-content:center}
+  .dock-meta,#viz{display:none}
+  .hero-sub{flex-direction:column;align-items:flex-start;gap:.4rem}
+  .hero-sub i{display:none}
+  .audio-dock{left:.75rem;bottom:.75rem}
+  .to-top{right:.75rem;bottom:.75rem;width:48px;height:48px}
+  .grid-overlay{background-size:48px 48px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .js [data-reveal]{transform:none;filter:none}
+}
+</style>
+</head>
+<body class="locked">
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============ LOADER ============ -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="loader-inner">
+    <div class="loader-core" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id="lg" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#ffe1a0"/><stop offset=".7" stop-color="#f2b544" stop-opacity=".5"/><stop offset="1" stop-color="#e3262d" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="96" fill="none" stroke="rgba(201,206,214,.15)"/>
+        <g class="lc-spin"><circle cx="100" cy="100" r="86" fill="none" stroke="#e3262d" stroke-width="2" stroke-dasharray="70 200"/></g>
+        <g class="lc-spin-r"><circle cx="100" cy="100" r="74" fill="none" stroke="#f2b544" stroke-width="1" stroke-dasharray="4 6"/></g>
+        <g class="lc-spin"><circle cx="100" cy="100" r="56" fill="none" stroke="#f2b544" stroke-width="10" stroke-dasharray="22 7.3" opacity=".85"/></g>
+        <g class="lc-glow"><circle cx="100" cy="100" r="40" fill="url(#lg)"/></g>
+        <polygon points="100,80 117,90 117,110 100,120 83,110 83,90" fill="none" stroke="#fff" stroke-width="1.2" opacity=".8"/>
+      </svg>
+    </div>
+    <div class="loader-pct"><span id="loader-pct">000</span><small>%</small></div>
+    <div class="loader-bar"><i id="loader-bar"></i></div>
+    <div class="loader-msg" id="loader-msg">CALIBRATING CORE</div>
+  </div>
+</div>
+
+<!-- ============ AMBIENT LAYERS ============ -->
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="grid-overlay" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="wipe" aria-hidden="true"><span class="wipe-text">ROUTING&nbsp;//&nbsp;<b id="wipe-target">ABOUT</b></span></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="nav" aria-label="Primary">
+  <a href="#top" class="brand" data-wipe="HOME" aria-label="Pratham Kumar — home">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40"><polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="none" stroke="#f2b544" stroke-width="1" stroke-dasharray="6 3"/></svg>
+      <span>PK</span>
+    </span>
+    <span>PRATHAM</span>
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about" data-num="01" data-wipe="ABOUT">About</a></li>
+    <li><a href="#skills" data-num="02" data-wipe="SKILLS">Skills</a></li>
+    <li><a href="#projects" data-num="03" data-wipe="PROJECTS">Projects</a></li>
+    <li><a href="#beyond" data-num="04" data-wipe="BEYOND CODING">Beyond</a></li>
+    <li><a href="#contact" data-num="05" data-wipe="CONTACT">Contact</a></li>
+  </ul>
+  <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+</nav>
+
+<main id="main">
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-grid">
+    <div class="hero-text">
+      <div class="hero-hud-top mono" aria-hidden="true">
+        <span class="live">SYSTEM ONLINE</span>
+        <span>T <b id="hud-time">--:--:--</b> IST</span>
+        <span class="hud-xy">X <b id="hud-x">0000</b> · Y <b id="hud-y">0000</b></span>
+      </div>
+      <p class="hero-kicker" data-split="kicker">WELCOME TO MY UNIVERSE</p>
+      <h1 class="hero-name" aria-label="Pratham Kumar">
+        <span class="line line-1" data-split="name" aria-hidden="true">PRATHAM<span class="flare"></span></span>
+        <span class="line line-2" data-split="name" aria-hidden="true">KUMAR</span>
+      </h1>
+      <p class="hero-sub">
+        <span style="--i:0">Computer Science Student</span><i style="--i:1"></i>
+        <span style="--i:2">Competitive Programmer</span><i style="--i:3"></i>
+        <span style="--i:4">Future Innovator</span>
+      </p>
+      <div class="hero-ctas">
+        <a href="#about" class="btn btn-primary magnetic" data-smooth style="--i:0">Explore My Universe
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#projects" class="btn magnetic" data-smooth style="--i:1">View Projects
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+
+    <div class="core-wrap" data-speed="-0.12" aria-hidden="true">
+      <span class="wave"></span><span class="wave"></span><span class="wave"></span>
+      <div class="core-sweep"></div>
+      <svg viewBox="0 0 600 600" id="core-svg">
+        <defs>
+          <radialGradient id="coreG" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset=".25" stop-color="#fff1cf"/>
+            <stop offset=".55" stop-color="#f2b544" stop-opacity=".75"/>
+            <stop offset=".8" stop-color="#e3262d" stop-opacity=".25"/>
+            <stop offset="1" stop-color="#e3262d" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- outer -->
+        <g class="r-slow">
+          <circle cx="300" cy="300" r="286" fill="none" stroke="rgba(201,206,214,.18)" stroke-dasharray="2 9"/>
+          <g id="ticks"></g>
+        </g>
+        <circle cx="300" cy="300" r="238" fill="none" stroke="rgba(201,206,214,.1)"/>
+        <!-- red arcs -->
+        <g class="r-mid">
+          <circle cx="300" cy="300" r="222" fill="none" stroke="#e3262d" stroke-width="3" stroke-dasharray="120 40 30 40 200 60" opacity=".85" filter="url(#glow)"/>
+          <circle cx="300" cy="78" r="4" fill="#e3262d"/>
+        </g>
+        <!-- gold segmented -->
+        <g class="r-fast">
+          <circle cx="300" cy="300" r="190" fill="none" stroke="#f2b544" stroke-width="1" stroke-dasharray="50 14" opacity=".7"/>
+        </g>
+        <!-- hex frame -->
+        <g class="r-hex">
+          <polygon points="300,150 430,225 430,375 300,450 170,375 170,225" fill="none" stroke="rgba(242,181,68,.45)" stroke-width="1"/>
+          <polygon points="300,165 417,232 417,368 300,435 183,368 183,232" fill="none" stroke="rgba(201,206,214,.15)" stroke-width="1" stroke-dasharray="4 6"/>
+          <circle cx="300" cy="150" r="3" fill="#f2b544"/><circle cx="430" cy="375" r="3" fill="#f2b544"/><circle cx="170" cy="375" r="3" fill="#f2b544"/>
+        </g>
+        <!-- energy cells -->
+        <g class="r-fast" style="animation-duration:30s">
+          <circle cx="300" cy="300" r="122" fill="none" stroke="#f2b544" stroke-width="18" stroke-dasharray="44 19.9" opacity=".85" filter="url(#glow)"/>
+          <circle cx="300" cy="300" r="122" fill="none" stroke="#fff6dc" stroke-width="2" stroke-dasharray="44 19.9" opacity=".7"/>
+        </g>
+        <circle cx="300" cy="300" r="104" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/>
+        <!-- core -->
+        <g class="core-glow">
+          <circle cx="300" cy="300" r="140" fill="url(#coreG)" opacity=".55"/>
+          <circle cx="300" cy="300" r="80" fill="url(#coreG)"/>
+        </g>
+        <polygon points="300,262 333,281 333,319 300,338 267,319 267,281" fill="none" stroke="#fff" stroke-width="2" opacity=".9" filter="url(#glow)"/>
+        <circle cx="300" cy="300" r="14" fill="#fff" filter="url(#glow)"/>
+        <!-- crosshair -->
+        <g stroke="rgba(201,206,214,.25)" stroke-width="1">
+          <line x1="300" y1="0" x2="300" y2="40"/><line x1="300" y1="560" x2="300" y2="600"/>
+          <line x1="0" y1="300" x2="40" y2="300"/><line x1="560" y1="300" x2="600" y2="300"/>
+        </g>
+      </svg>
+      <div class="callout c1"><b>CORE // STABLE</b>OUTPUT NOMINAL</div>
+      <div class="callout c2"><b>UNIT: NST-RU</b>YEAR 01 · CS</div>
+      <div class="callout c3"><b>MODE: BUILD</b>SCROLL <span id="hud-scroll">00</span>%</div>
+    </div>
+  </div>
+  <a href="#about" class="scroll-ind" data-smooth aria-label="Scroll to About">
+    <span class="mouse"></span>SCROLL
+  </a>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about">
+  <div class="container">
+    <header class="s-head">
+      <span class="s-label" data-reveal>01 — Subject File</span>
+      <h2 class="s-title" data-reveal style="--d:.1s">About <span class="accent">Me</span></h2>
+    </header>
+
+    <article class="dossier holo corners" data-reveal style="--d:.15s">
+      <aside class="dossier-side">
+        <div class="avatar">
+          <svg class="ring" viewBox="0 0 220 220" aria-hidden="true">
+            <circle cx="110" cy="110" r="106" fill="none" stroke="#f2b544" stroke-width="1" stroke-dasharray="3 7" opacity=".7"/>
+            <circle cx="110" cy="110" r="98" fill="none" stroke="#e3262d" stroke-width="2" stroke-dasharray="60 240" />
+          </svg>
+          <div class="hex">
+            <!-- To use a photo, replace the span below with: <img src="your-photo.jpg" alt="Pratham Kumar"> -->
+            <span>PK</span>
+          </div>
+        </div>
+        <div class="id-tag">
+          <span class="codename">PRATHAM KUMAR</span>
+          <span class="clear">CLEARANCE // STUDENT-01</span>
+        </div>
+        <div class="hazard" aria-hidden="true"></div>
+      </aside>
+
+      <div class="dossier-main">
+        <div class="dossier-head"><span>FILE <b>#PK-2026</b></span><span>STATUS <b>ACTIVE</b></span><span>ORIGIN <b>NST-RU</b></span></div>
+        <p class="about-lead">I'm <strong>Pratham Kumar</strong>, a first-year Computer Science student at <strong>Newton School of Technology, Rishihood University</strong>.</p>
+        <p class="about-body">Most of my time goes into competitive programming: taking a problem apart, finding the idea underneath it and writing it cleanly in C++ or Python. I like building things to see how they work from the inside, which is how my Tokenizer project started. When I'm away from the keyboard, I'm usually on a court or a course.</p>
+        <dl class="fields">
+          <div class="field"><dt>Designation</dt><dd>CS Student</dd></div>
+          <div class="field"><dt>Year</dt><dd>1st Year</dd></div>
+          <div class="field"><dt>Base</dt><dd>NST-RU</dd></div>
+          <div class="field"><dt>Primary</dt><dd>CP · Python · C++</dd></div>
+          <div class="field"><dt>Projects</dt><dd>Tokenizer</dd></div>
+          <div class="field"><dt>Status</dt><dd class="on">Online</dd></div>
+        </dl>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ SKILLS ============ -->
+<section id="skills">
+  <div class="container">
+    <header class="s-head">
+      <span class="s-label" data-reveal>02 — Capabilities</span>
+      <h2 class="s-title" data-reveal style="--d:.1s">Power <span class="accent">Arsenal</span></h2>
+      <p class="s-sub" data-reveal style="--d:.2s">The three tools I use most and keep getting better at.</p>
+    </header>
+
+    <div class="skills-grid">
+      <div data-reveal style="--d:.05s">
+        <article class="skill-card holo corners" data-tilt="10">
+          <div class="glare"></div>
+          <div class="skill-top"><span>S-01 // CORE</span><span class="st">● ACTIVE</span></div>
+          <div class="skill-icon">
+            <svg class="orbit" viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="52" fill="none" stroke="#f2b544" stroke-dasharray="2 6"/><circle cx="55" cy="55" r="44" fill="none" stroke="#e3262d" stroke-width="2" stroke-dasharray="40 236"/><circle cx="55" cy="3" r="3" fill="#f2b544"/></svg>
+            <svg class="g" viewBox="0 0 52 52" fill="none" stroke="#f4f6f8" stroke-width="2" aria-hidden="true">
+              <circle cx="10" cy="12" r="5"/><circle cx="42" cy="10" r="5"/><circle cx="26" cy="28" r="5" stroke="#f2b544"/><circle cx="10" cy="42" r="5"/><circle cx="42" cy="42" r="5"/>
+              <path d="M14 15l8 9M38 13l-8 11M22 31l-8 8M30 31l8 8M15 12h22" opacity=".7"/>
+            </svg>
+          </div>
+          <h3>Competitive Programming</h3>
+          <p>Reading a problem, finding the pattern behind it and turning it into an efficient algorithm against the clock.</p>
+          <ul class="tags"><li>Algorithms</li><li>Data Structures</li><li>Problem Solving</li></ul>
+          <div class="charge" aria-hidden="true"></div>
+          <div class="charge-label"><span>TRAINING</span><b>CONTINUOUS</b></div>
+        </article>
+      </div>
+
+      <div data-reveal style="--d:.15s">
+        <article class="skill-card holo corners" data-tilt="10">
+          <div class="glare"></div>
+          <div class="skill-top"><span>S-02 // LANG</span><span class="st">● ACTIVE</span></div>
+          <div class="skill-icon">
+            <svg class="orbit" viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="52" fill="none" stroke="#f2b544" stroke-dasharray="2 6"/><circle cx="55" cy="55" r="44" fill="none" stroke="#e3262d" stroke-width="2" stroke-dasharray="40 236"/><circle cx="55" cy="3" r="3" fill="#f2b544"/></svg>
+            <span class="glyph" aria-hidden="true">.py</span>
+          </div>
+          <h3>Python</h3>
+          <p>Readable and quick to write. I use it for scripting, prototyping ideas and testing approaches before I optimise them.</p>
+          <ul class="tags"><li>Scripting</li><li>Prototyping</li><li>Automation</li></ul>
+          <div class="charge" aria-hidden="true"></div>
+          <div class="charge-label"><span>TRAINING</span><b>CONTINUOUS</b></div>
+        </article>
+      </div>
+
+      <div data-reveal style="--d:.25s">
+        <article class="skill-card holo corners" data-tilt="10">
+          <div class="glare"></div>
+          <div class="skill-top"><span>S-03 // LANG</span><span class="st">● ACTIVE</span></div>
+          <div class="skill-icon">
+            <svg class="orbit" viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="52" fill="none" stroke="#f2b544" stroke-dasharray="2 6"/><circle cx="55" cy="55" r="44" fill="none" stroke="#e3262d" stroke-width="2" stroke-dasharray="40 236"/><circle cx="55" cy="3" r="3" fill="#f2b544"/></svg>
+            <span class="glyph" aria-hidden="true">C++</span>
+          </div>
+          <h3>C++</h3>
+          <p>What I use when speed matters: the STL, control over memory, and solutions that fit inside tight time limits.</p>
+          <ul class="tags"><li>STL</li><li>Performance</li><li>OOP</li></ul>
+          <div class="charge" aria-hidden="true"></div>
+          <div class="charge-label"><span>TRAINING</span><b>CONTINUOUS</b></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section id="projects">
+  <div class="container">
+    <header class="s-head">
+      <span class="s-label" data-reveal>03 — Mission Log</span>
+      <h2 class="s-title" data-reveal style="--d:.1s">Featured <span class="accent">Project</span></h2>
+    </header>
+
+    <div data-reveal="scale" style="--d:.15s">
+      <article class="project holo" data-tilt="3">
+        <div class="holo-lines" aria-hidden="true"></div>
+        <div class="glare"></div>
+        <div class="project-info">
+          <div class="proj-tag"><span>PROJECT 01</span>CLASSIFIED → DECLASSIFIED</div>
+          <h3 class="proj-title" data-text="TOKENIZER">TOKENIZER</h3>
+          <p class="placeholder"><b>[Project description]</b> What does your tokenizer do? Mention the approach (e.g. word-level, character-level, BPE), what problem it solves, and what you learned building it.</p>
+          <dl class="proj-meta">
+            <div><dt>LANGUAGE</dt><dd>[Add language / stack]</dd></div>
+            <div><dt>APPROACH</dt><dd>[Add tokenization method]</dd></div>
+            <div><dt>HIGHLIGHT</dt><dd>[Add one key feature]</dd></div>
+          </dl>
+          <div class="proj-actions">
+            <a class="btn btn-primary magnetic" data-href="tokenizerRepo" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+              View on GitHub</a>
+            <a class="btn magnetic" href="#tok-input" id="try-demo">Try the demo
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </div>
+
+        <div class="terminal">
+          <div class="term-bar"><i></i><i></i><i></i>&nbsp; tokenizer.demo <span>LIVE</span></div>
+          <div class="term-body">
+            <label for="tok-input">&gt; INPUT_STREAM</label>
+            <textarea id="tok-input" class="term-input" spellcheck="false">Hello, Universe! Tokenizers split text into pieces.</textarea>
+            <label>&gt; TOKENS</label>
+            <div class="tok-out" id="tok-out" aria-live="polite"></div>
+            <div class="tok-ids" id="tok-ids"></div>
+            <div class="tok-stats"><span>TOKENS<b id="tok-count">0</b></span><span>CHARS<b id="tok-chars">0</b></span><span>RATIO<b id="tok-ratio">0</b></span></div>
+            <p class="term-note">Illustrative in-browser demo. Not the project's actual algorithm.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEYOND CODING ============ -->
+<section id="beyond">
+  <div class="container">
+    <header class="s-head">
+      <span class="s-label" data-reveal>04 — Off-Duty Protocols</span>
+      <h2 class="s-title" data-reveal style="--d:.1s">Beyond <span class="accent">Coding</span></h2>
+      <p class="s-sub" data-reveal style="--d:.2s">Four sports that keep me sharp when I'm away from the screen.</p>
+    </header>
+
+    <div class="hobby-grid">
+      <div data-reveal style="--d:.05s">
+        <article class="hobby holo corners" data-tilt="12" tabindex="0">
+          <div class="glare"></div>
+          <div class="hobby-num"><span>H-01</span><span>COURT</span></div>
+          <svg class="hobby-icon" viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <circle cx="34" cy="36" r="22"/>
+            <path d="M48 52l14 14a4 4 0 0 1-6 6L42 58"/>
+            <path d="M22 28c4-6 12-8 18-5" opacity=".5"/>
+            <circle class="ball" cx="66" cy="18" r="5" fill="currentColor" stroke="none"/>
+          </svg>
+          <h3>Table Tennis</h3>
+          <p>Fast reflexes, spin and quick decisions at close range.</p>
+          <div class="bar"></div>
+        </article>
+      </div>
+      <div data-reveal style="--d:.15s">
+        <article class="hobby holo corners" data-tilt="12" tabindex="0">
+          <div class="glare"></div>
+          <div class="hobby-num"><span>H-02</span><span>COURT</span></div>
+          <svg class="hobby-icon" viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <ellipse cx="34" cy="30" rx="18" ry="22" transform="rotate(-35 34 30)"/>
+            <path d="M22 18l24 24M18 28l20 20M28 14l18 18M30 46l-14-14" stroke-width="1" opacity=".55"/>
+            <path d="M46 46l20 20" stroke-width="5" stroke-linecap="round"/>
+            <circle class="ball" cx="66" cy="20" r="7"/>
+            <path class="ball" d="M60 16c3 3 9 3 12 0M60 24c3-3 9-3 12 0" stroke-width="1.2"/>
+          </svg>
+          <h3>Lawn Tennis</h3>
+          <p>Long rallies, patience and building the point shot by shot.</p>
+          <div class="bar"></div>
+        </article>
+      </div>
+      <div data-reveal style="--d:.25s">
+        <article class="hobby holo corners" data-tilt="12" tabindex="0">
+          <div class="glare"></div>
+          <div class="hobby-num"><span>H-03</span><span>COURT</span></div>
+          <svg class="hobby-icon" viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <g class="ball">
+              <path d="M30 14l-8 34h28l-8-34z"/>
+              <path d="M36 14v34M26 30h20" stroke-width="1" opacity=".6"/>
+              <path d="M22 48h28v4a14 14 0 0 1-28 0z" fill="currentColor"/>
+            </g>
+            <path d="M58 74l14-14" stroke-width="1" opacity=".5"/>
+            <path d="M62 78l14-14" stroke-width="1" opacity=".3"/>
+          </svg>
+          <h3>Badminton</h3>
+          <p>Speed, smashes and the footwork to get to every corner.</p>
+          <div class="bar"></div>
+        </article>
+      </div>
+      <div data-reveal style="--d:.35s">
+        <article class="hobby holo corners" data-tilt="12" tabindex="0">
+          <div class="glare"></div>
+          <div class="hobby-num"><span>H-04</span><span>COURSE</span></div>
+          <svg class="hobby-icon" viewBox="0 0 84 84" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M44 66V10"/>
+            <path d="M44 10l22 8-22 9z" fill="currentColor" opacity=".85"/>
+            <ellipse cx="44" cy="68" rx="20" ry="5"/>
+            <circle class="ball" cx="16" cy="62" r="5" fill="currentColor" stroke="none"/>
+            <path d="M10 76c10-4 22-4 34-8" stroke-width="1" opacity=".4" stroke-dasharray="2 4"/>
+          </svg>
+          <h3>Golf</h3>
+          <p>Focus, precision and staying calm, one swing at a time.</p>
+          <div class="bar"></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="container">
+    <header class="s-head">
+      <span class="s-label" data-reveal>05 — Comms Channel</span>
+      <h2 class="s-title" data-reveal style="--d:.1s">Open a <span class="accent">Channel</span></h2>
+    </header>
+
+    <div class="contact-wrap">
+      <div class="comms holo corners" data-reveal="left" style="--d:.1s">
+        <div class="radar" aria-hidden="true"></div>
+        <h3>Got an idea, a problem or a project? Let's talk.</h3>
+        <div class="email-row">
+          <a class="email-link" data-email href="#">your.email@example.com</a>
+          <button class="copy-btn" id="copy-email" type="button">COPY</button>
+        </div>
+        <div class="socials">
+          <a class="social" data-href="github" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
+            <span><b>GitHub</b><small>@your-username</small></span>
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+          </a>
+          <a class="social" data-href="linkedin" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.84-2.05 3.78-2.05 4.04 0 4.79 2.66 4.79 6.12V21h-4v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.07 1.4-2.07 2.86V21H9z"/></svg>
+            <span><b>LinkedIn</b><small>/in/your-profile</small></span>
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+          </a>
+          <a class="social" data-href="codeforces" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="2" y="9" width="5" height="12" rx="1"/><rect x="9.5" y="3" width="5" height="18" rx="1"/><rect x="17" y="12" width="5" height="9" rx="1"/></svg>
+            <span><b>Codeforces</b><small>your-handle</small></span>
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+          </a>
+          <a class="social" data-href="leetcode" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6M14 4l-4 16"/></svg>
+            <span><b>LeetCode</b><small>your-handle</small></span>
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <form class="transmit holo corners" id="contact-form" data-reveal="right" style="--d:.2s" novalidate>
+        <div class="transmit-head"><span>NEW TRANSMISSION</span><b>● ENCRYPTED</b></div>
+        <div class="f-group"><label for="f-name">YOUR NAME</label><input id="f-name" name="name" autocomplete="name" required placeholder="Who's calling?"></div>
+        <div class="f-group"><label for="f-msg">MESSAGE</label><textarea id="f-msg" name="message" required placeholder="What's the mission?"></textarea></div>
+        <button class="btn btn-primary magnetic" type="submit">Send Transmission
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+        <p class="f-note">Opens your email app with the message ready to send.</p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="foot">
+    <span>© <span id="year">2026</span> <b>PRATHAM KUMAR</b></span>
+    <span>NST-RU · CLASS OF 01</span>
+    <span>BUILT WITH HTML · CSS · JS</span>
+  </div>
+</footer>
+
+<!-- ============ AUDIO DOCK ============ -->
+<div class="audio-dock" role="group" aria-label="Sound controls">
+  <button class="dock-btn" id="music-toggle" aria-pressed="false" aria-label="Play background music">
+    <svg class="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>
+    <svg class="i-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+  </button>
+  <canvas id="viz" width="144" height="56" aria-hidden="true"></canvas>
+  <div class="dock-meta"><b>AMBIENT</b><span id="music-state">OFF</span></div>
+  <button class="dock-btn" id="mute-toggle" aria-pressed="false" aria-label="Mute all sound">
+    <svg class="i-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+    <svg class="i-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4zM23 9l-6 6M17 9l6 6"/></svg>
+  </button>
+</div>
+
+<button class="to-top" id="to-top" aria-label="Back to top">
+  <svg class="ring" viewBox="0 0 56 56" aria-hidden="true">
+    <defs><linearGradient id="tg" x1="0" x2="1"><stop offset="0" stop-color="#e3262d"/><stop offset="1" stop-color="#f2b544"/></linearGradient></defs>
+    <circle cx="28" cy="28" r="26" stroke="rgba(201,206,214,.12)"/>
+    <circle id="top-prog" cx="28" cy="28" r="26" stroke="url(#tg)" stroke-dasharray="163.36" stroke-dashoffset="163.36" stroke-linecap="round"/>
+  </svg>
+  <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+</button>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   CONFIG — edit your links here
+   ========================================================= */
+const CONFIG = {
+  email:        'your.email@example.com',
+  github:       'https://github.com/your-username',
+  linkedin:     'https://www.linkedin.com/in/your-profile',
+  codeforces:   'https://codeforces.com/profile/your-handle',
+  leetcode:     'https://leetcode.com/u/your-handle',
+  tokenizerRepo:'https://github.com/your-username/tokenizer',
+  // Optional: URL of a royalty-free track (mp3). Leave empty to use the built-in synthesized ambient score.
+  musicUrl:     ''
+};
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine   = matchMedia('(pointer: fine)').matches;
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+
+/* ---------- bind config ---------- */
+$$('[data-href]').forEach(a => { const v = CONFIG[a.dataset.href]; if (v) a.href = v; });
+$$('[data-email]').forEach(a => { a.textContent = CONFIG.email; a.href = 'mailto:' + CONFIG.email; });
+$('#year').textContent = new Date().getFullYear();
+
+/* =========================================================
+   SOUND ENGINE (Web Audio — no external files needed)
+   ========================================================= */
+const Sound = (() => {
+  let ctx, master, sfxBus, musicBus, analyser, synth = null, media = null, stopTimer = null;
+  let muted = false, playing = false;
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const CHORDS = [[57,60,64],[53,57,60],[48,52,55],[55,59,62]]; // Am F C G
+
+  function init() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 1; master.connect(ctx.destination);
+    analyser = ctx.createAnalyser(); analyser.fftSize = 64; analyser.smoothingTimeConstant = .8;
+    musicBus = ctx.createGain(); musicBus.gain.value = 0;
+    musicBus.connect(analyser); analyser.connect(master);
+    sfxBus = ctx.createGain(); sfxBus.gain.value = .14; sfxBus.connect(master);
+    return ctx;
+  }
+  const ready = () => ctx && ctx.state === 'running';
+
+  function blip(freq = 720, dur = .09, type = 'sine', vol = 1) {
+    if (muted || !init()) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, t);
+    o.frequency.exponentialRampToValueAtTime(freq * 1.6, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(.6 * vol, t + .006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(sfxBus); o.start(t); o.stop(t + dur + .03);
+  }
+  function hover() { if (ready() && !muted) blip(1500, .035, 'sine', .25); }
+
+  function startSynth() {
+    const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 800; filter.Q.value = 3;
+    const lfo = ctx.createOscillator(), lfoG = ctx.createGain();
+    lfo.frequency.value = .07; lfoG.gain.value = 450; lfo.connect(lfoG); lfoG.connect(filter.frequency); lfo.start();
+    const delay = ctx.createDelay(1); delay.delayTime.value = .375;
+    const fb = ctx.createGain(); fb.gain.value = .38;
+    delay.connect(fb); fb.connect(delay);
+    filter.connect(musicBus); filter.connect(delay); delay.connect(musicBus);
+
+    const voices = [0,1,2].map(() => {
+      const a = ctx.createOscillator(), b = ctx.createOscillator(), g = ctx.createGain();
+      a.type = b.type = 'sawtooth'; b.detune.value = 9; g.gain.value = .045;
+      a.connect(g); b.connect(g); g.connect(filter); a.start(); b.start();
+      return { a, b };
+    });
+    const bass = ctx.createOscillator(), bg = ctx.createGain();
+    bass.type = 'sine'; bg.gain.value = 0.0001; bass.connect(bg); bg.connect(musicBus); bass.start();
+
+    let i = 0;
+    const step = () => {
+      const ch = CHORDS[i % CHORDS.length], t = ctx.currentTime + .05;
+      voices.forEach((v, k) => { const f = mtof(ch[k]); v.a.frequency.setTargetAtTime(f, t, .35); v.b.frequency.setTargetAtTime(f, t, .35); });
+      bass.frequency.setTargetAtTime(mtof(ch[0] - 24), t, .05);
+      for (let k = 0; k < 4; k++) {
+        const bt = t + k;
+        bg.gain.setValueAtTime(0.0001, bt);
+        bg.gain.exponentialRampToValueAtTime(.32, bt + .03);
+        bg.gain.exponentialRampToValueAtTime(0.0001, bt + .85);
+      }
+      for (let n = 0; n < 8; n++) {
+        const at = t + n * .5, o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'triangle';
+        o.frequency.value = mtof(ch[n % 3] + 12 + (n > 3 ? 12 : 0));
+        g.gain.setValueAtTime(0.0001, at);
+        g.gain.exponentialRampToValueAtTime(.05, at + .01);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + .45);
+        o.connect(g); g.connect(filter); o.start(at); o.stop(at + .5);
+      }
+      i++;
+    };
+    step();
+    const timer = setInterval(step, 4000);
+    return {
+      stop() {
+        clearInterval(timer);
+        voices.forEach(v => { v.a.stop(); v.b.stop(); });
+        bass.stop(); lfo.stop();
+        setTimeout(() => { filter.disconnect(); delay.disconnect(); fb.disconnect(); }, 200);
+      }
+    };
+  }
+
+  function play() {
+    if (!init()) return false;
+    ctx.resume();
+    clearTimeout(stopTimer);
+    if (CONFIG.musicUrl) {
+      if (!media) {
+        media = new Audio(CONFIG.musicUrl); media.loop = true; media.crossOrigin = 'anonymous';
+        try { ctx.createMediaElementSource(media).connect(musicBus); } catch (e) { media.volume = .6; }
+      }
+      media.play().catch(() => {});
+    } else if (!synth) {
+      synth = startSynth();
+    }
+    const t = ctx.currentTime;
+    musicBus.gain.cancelScheduledValues(t);
+    musicBus.gain.setValueAtTime(musicBus.gain.value, t);
+    musicBus.gain.linearRampToValueAtTime(.55, t + 1.8);
+    playing = true; return true;
+  }
+  function pause() {
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    musicBus.gain.cancelScheduledValues(t);
+    musicBus.gain.setValueAtTime(musicBus.gain.value, t);
+    musicBus.gain.linearRampToValueAtTime(0, t + .9);
+    playing = false;
+    stopTimer = setTimeout(() => {
+      if (synth) { synth.stop(); synth = null; }
+      if (media) media.pause();
+    }, 1000);
+  }
+  function setMuted(m) {
+    muted = m;
+    if (!init()) return;
+    const t = ctx.currentTime;
+    master.gain.cancelScheduledValues(t);
+    master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(m ? 0 : 1, t + .25);
+  }
+  return { blip, hover, play, pause, setMuted, get analyser() { return analyser; }, get playing() { return playing; } };
+})();
+
+/* audio dock */
+const musicBtn = $('#music-toggle'), muteBtn = $('#mute-toggle'), musicState = $('#music-state');
+musicBtn.addEventListener('click', () => {
+  if (Sound.playing) { Sound.pause(); musicBtn.setAttribute('aria-pressed','false'); musicBtn.setAttribute('aria-label','Play background music'); musicState.textContent = 'OFF'; }
+  else if (Sound.play()) { musicBtn.setAttribute('aria-pressed','true'); musicBtn.setAttribute('aria-label','Pause background music'); musicState.textContent = 'PLAYING'; }
+});
+muteBtn.addEventListener('click', () => {
+  const m = muteBtn.getAttribute('aria-pressed') !== 'true';
+  if (!m) { muteBtn.setAttribute('aria-pressed','false'); Sound.setMuted(false); Sound.blip(880); }
+  else { Sound.setMuted(true); muteBtn.setAttribute('aria-pressed','true'); }
+  muteBtn.setAttribute('aria-label', m ? 'Unmute sound' : 'Mute all sound');
+  if (m && Sound.playing) musicState.textContent = 'MUTED';
+  else musicState.textContent = Sound.playing ? 'PLAYING' : 'OFF';
+});
+
+/* visualizer */
+const viz = $('#viz'), vctx = viz.getContext('2d');
+const vData = new Uint8Array(32);
+let idleT = 0;
+function drawViz() {
+  const w = viz.width, h = viz.height, bars = 12, gap = 4, bw = (w - gap * (bars - 1)) / bars;
+  vctx.clearRect(0, 0, w, h);
+  const an = Sound.analyser;
+  if (an && Sound.playing) an.getByteFrequencyData(vData);
+  idleT += .05;
+  for (let i = 0; i < bars; i++) {
+    let v = (an && Sound.playing) ? vData[i + 1] / 255 : (.08 + .05 * Math.sin(idleT + i * .7));
+    v = Math.max(.06, v);
+    const bh = v * h;
+    const g = vctx.createLinearGradient(0, h, 0, h - bh);
+    g.addColorStop(0, '#e3262d'); g.addColorStop(1, '#f2b544');
+    vctx.fillStyle = g;
+    vctx.fillRect(i * (bw + gap), h - bh, bw, bh);
+  }
+  requestAnimationFrame(drawViz);
+}
+drawViz();
+
+/* UI sfx */
+document.addEventListener('click', e => {
+  const t = e.target.closest('a,button');
+  if (!t || t === musicBtn || t === muteBtn) return;
+  Sound.blip(t.classList.contains('btn-primary') ? 520 : 680, .1, 'triangle', .8);
+});
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('.magnetic,.nav-links a,.social');
+  if (t && !t.contains(e.relatedTarget)) Sound.hover();
+});
+
+/* =========================================================
+   LOADER
+   ========================================================= */
+const loader = $('#loader'), lPct = $('#loader-pct'), lBar = $('#loader-bar'), lMsg = $('#loader-msg');
+const msgs = ['CALIBRATING CORE','LOADING MODULES','SYNCING HUD','POWERING UP','WELCOME'];
+const minT = reduce ? 400 : 2200, t0 = performance.now();
+const pageLoaded = new Promise(r => document.readyState === 'complete' ? r() : addEventListener('load', r));
+const capped = Promise.race([pageLoaded, new Promise(r => setTimeout(r, 5000))]);
+let loadDone = false;
+capped.then(() => loadDone = true);
+function loaderTick(now) {
+  let t = Math.min(1, (now - t0) / minT);
+  if (!loadDone) t = Math.min(t, .92);
+  const p = Math.round((1 - Math.pow(1 - t, 3)) * 100);
+  lPct.textContent = String(p).padStart(3, '0');
+  lBar.style.width = p + '%';
+  lMsg.textContent = msgs[Math.min(msgs.length - 1, Math.floor(t * msgs.length))];
+  if (t < 1) requestAnimationFrame(loaderTick); else setTimeout(finishLoad, 250);
+}
+requestAnimationFrame(loaderTick);
+function finishLoad() {
+  loader.classList.add('done');
+  document.body.classList.remove('locked');
+  document.body.classList.add('loaded');
+  setTimeout(() => {
+    $$('.line-2').forEach(l => l.classList.add('filled'));
+  }, 2600);
+  setTimeout(() => loader.remove(), 1200);
+}
+
+/* split hero text into letters */
+let idx = 0;
+$$('[data-split]').forEach(el => {
+  const keep = $$('.flare', el);
+  const text = el.childNodes[0].nodeValue || el.textContent;
+  el.textContent = '';
+  if (el.dataset.split === 'kicker') idx = 0;
+  [...text].forEach(ch => {
+    const s = document.createElement('span');
+    if (ch === ' ') { s.className = 'sp'; }
+    else { s.className = 'ch'; s.textContent = ch; s.style.setProperty('--i', idx++); }
+    el.appendChild(s);
+  });
+  keep.forEach(k => el.appendChild(k));
+  if (el.dataset.split === 'kicker') idx = 0;
+});
+
+/* =========================================================
+   CORE TICKS
+   ========================================================= */
+const ticks = $('#ticks'), NS = 'http://www.w3.org/2000/svg';
+for (let i = 0; i < 120; i++) {
+  const a = i / 120 * Math.PI * 2, long = i % 10 === 0, r1 = 262, r2 = long ? 246 : 255;
+  const l = document.createElementNS(NS, 'line');
+  l.setAttribute('x1', 300 + Math.cos(a) * r1); l.setAttribute('y1', 300 + Math.sin(a) * r1);
+  l.setAttribute('x2', 300 + Math.cos(a) * r2); l.setAttribute('y2', 300 + Math.sin(a) * r2);
+  l.setAttribute('stroke', long ? '#f2b544' : 'rgba(201,206,214,.35)');
+  l.setAttribute('stroke-width', long ? 2 : 1);
+  ticks.appendChild(l);
+}
+
+/* =========================================================
+   PARTICLES
+   ========================================================= */
+const cv = $('#bg-canvas'), cx = cv.getContext('2d');
+let W, H, parts = [], mx = 0, my = 0, tmx = 0, tmy = 0, running = true;
+const COLORS = ['227,38,45', '242,181,68', '242,181,68', '201,206,214', '201,206,214'];
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  let n = Math.min(110, Math.floor(W * H / 13000));
+  if (reduce) n = Math.floor(n / 2);
+  parts = Array.from({ length: n }, () => ({
+    x: Math.random() * W, y: Math.random() * H, z: Math.random() * .8 + .2,
+    vx: (Math.random() - .5) * .18, vy: (Math.random() - .5) * .18,
+    c: COLORS[(Math.random() * COLORS.length) | 0]
+  }));
+  if (reduce) drawParticles();
+}
+function drawParticles() {
+  cx.clearRect(0, 0, W, H);
+  mx += (tmx - mx) * .05; my += (tmy - my) * .05;
+  const sy = scrollY;
+  for (const p of parts) {
+    if (!reduce) { p.x += p.vx; p.y += p.vy; }
+    if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20;
+    if (p.y < -20) p.y = H + 20; else if (p.y > H + 20) p.y = -20;
+    p.px = p.x + mx * 40 * p.z;
+    p.py = (((p.y - sy * .2 * p.z) % H) + H) % H + my * 40 * p.z;
+  }
+  cx.lineWidth = .6;
+  for (let i = 0; i < parts.length; i++) {
+    const a = parts[i];
+    for (let j = i + 1; j < parts.length; j++) {
+      const b = parts[j], dx = a.px - b.px, dy = a.py - b.py, d2 = dx * dx + dy * dy;
+      if (d2 < 14400) {
+        cx.strokeStyle = `rgba(201,206,214,${(1 - Math.sqrt(d2) / 120) * .1 * Math.min(a.z, b.z) * 1.5})`;
+        cx.beginPath(); cx.moveTo(a.px, a.py); cx.lineTo(b.px, b.py); cx.stroke();
+      }
+    }
+  }
+  for (const p of parts) {
+    const r = p.z * 1.7;
+    cx.fillStyle = `rgba(${p.c},${.08 * p.z})`;
+    cx.beginPath(); cx.arc(p.px, p.py, r * 4, 0, 6.283); cx.fill();
+    cx.fillStyle = `rgba(${p.c},${.35 + .55 * p.z})`;
+    cx.beginPath(); cx.arc(p.px, p.py, r, 0, 6.283); cx.fill();
+  }
+}
+function particleLoop() { if (running) drawParticles(); requestAnimationFrame(particleLoop); }
+resize();
+addEventListener('resize', resize);
+document.addEventListener('visibilitychange', () => running = !document.hidden);
+if (!reduce) particleLoop();
+
+/* =========================================================
+   CURSOR + HUD MOUSE
+   ========================================================= */
+const hudX = $('#hud-x'), hudY = $('#hud-y');
+addEventListener('mousemove', e => {
+  tmx = (e.clientX / W - .5) * 2; tmy = (e.clientY / H - .5) * 2;
+  hudX.textContent = String(e.clientX).padStart(4, '0');
+  hudY.textContent = String(e.clientY).padStart(4, '0');
+}, { passive: true });
+
+if (fine && !reduce) {
+  document.body.classList.add('has-cursor');
+  const dot = $('.cursor-dot'), ring = $('.cursor-ring');
+  let px = innerWidth / 2, py = innerHeight / 2, rx = px, ry = py;
+  addEventListener('mousemove', e => { px = e.clientX; py = e.clientY; dot.style.transform = `translate(${px}px,${py}px)`; }, { passive: true });
+  (function ringLoop() {
+    rx += (px - rx) * .18; ry += (py - ry) * .18;
+    ring.style.transform = `translate(${rx}px,${ry}px)`;
+    requestAnimationFrame(ringLoop);
+  })();
+  document.addEventListener('mouseover', e => {
+    ring.classList.toggle('hover', !!e.target.closest('a,button,[data-tilt],input,textarea'));
+  });
+  document.addEventListener('mouseleave', () => { dot.style.opacity = ring.style.opacity = 0; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = ring.style.opacity = ''; });
+
+  /* magnetic buttons */
+  $$('.magnetic').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+      el.style.transform = `translate(${x * .25}px,${y * .35}px)`;
+    });
+    el.addEventListener('mouseleave', () => el.style.transform = '');
+  });
+
+  /* 3D tilt */
+  $$('[data-tilt]').forEach(card => {
+    const max = +card.dataset.tilt || 10;
+    card.addEventListener('mouseenter', () => card.classList.add('tilting'));
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--rx', ((.5 - y) * max).toFixed(2) + 'deg');
+      card.style.setProperty('--ry', ((x - .5) * max).toFixed(2) + 'deg');
+      card.style.setProperty('--mx', (x * 100) + '%');
+      card.style.setProperty('--my', (y * 100) + '%');
+    });
+    card.addEventListener('mouseleave', () => {
+      card.classList.remove('tilting');
+      card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg');
+    });
+  });
+}
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+const hudTime = $('#hud-time');
+const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' });
+const tickClock = () => hudTime.textContent = fmt.format(new Date());
+tickClock(); setInterval(tickClock, 1000);
+
+/* =========================================================
+   SCROLL: reveal, parallax, nav, progress
+   ========================================================= */
+const io = new IntersectionObserver(entries => entries.forEach(en => {
+  if (en.isIntersecting) {
+    en.target.classList.add('in');
+    $$('.s-title', en.target).forEach(t => t.classList.add('in'));
+    io.unobserve(en.target);
+  }
+}), { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+/* clipped titles have zero visible area, so observe their header instead */
+$$('[data-reveal]').forEach(el => io.observe(el.classList.contains('s-title') ? el.parentElement : el));
+
+const nav = $('#nav'), toTop = $('#to-top'), prog = $('#top-prog'), hudScroll = $('#hud-scroll');
+const CIRC = 2 * Math.PI * 26;
+const parallax = $$('[data-speed]');
+let ticking = false;
+function onScroll() {
+  const y = scrollY, max = document.documentElement.scrollHeight - innerHeight;
+  const p = max > 0 ? y / max : 0;
+  nav.classList.toggle('scrolled', y > 40);
+  toTop.classList.toggle('show', y > 600);
+  prog.style.strokeDashoffset = CIRC * (1 - p);
+  hudScroll.textContent = String(Math.round(p * 100)).padStart(2, '0');
+  if (!reduce) parallax.forEach(el => { el.style.translate = `0 ${y * parseFloat(el.dataset.speed)}px`; });
+  ticking = false;
+}
+addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+onScroll();
+
+/* active nav link */
+const links = $$('.nav-links a');
+const secIO = new IntersectionObserver(entries => entries.forEach(en => {
+  if (en.isIntersecting) links.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + en.target.id ? 'true' : 'false'));
+}), { rootMargin: '-45% 0px -50% 0px' });
+$$('main section').forEach(s => secIO.observe(s));
+
+/* =========================================================
+   NAVIGATION: wipe transitions + smooth scroll
+   ========================================================= */
+const wipe = $('.wipe'), wipeTarget = $('#wipe-target');
+const goTo = (el, smooth) => {
+  const top = el.id === 'top' ? 0 : el.getBoundingClientRect().top + scrollY;
+  window.scrollTo({ top, behavior: smooth && !reduce ? 'smooth' : 'instant' });
+};
+let wiping = false;
+$$('a[data-wipe]').forEach(a => a.addEventListener('click', e => {
+  const target = $(a.getAttribute('href'));
+  if (!target) return;
+  e.preventDefault();
+  closeMenu();
+  if (reduce) { goTo(target, false); return; }
+  if (wiping) return;
+  wiping = true;
+  wipeTarget.textContent = a.dataset.wipe;
+  wipe.classList.remove('run'); void wipe.offsetWidth; wipe.classList.add('run');
+  Sound.blip(300, .35, 'sawtooth', .35);
+  setTimeout(() => goTo(target, false), 400);
+  setTimeout(() => { wipe.classList.remove('run'); wiping = false; history.replaceState(null, '', a.getAttribute('href')); }, 920);
+}));
+$$('a[data-smooth]').forEach(a => a.addEventListener('click', e => {
+  const target = $(a.getAttribute('href'));
+  if (!target) return;
+  e.preventDefault(); goTo(target, true);
+}));
+toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduce ? 'instant' : 'smooth' }));
+
+/* mobile menu */
+const menuBtn = $('#menu-btn');
+function closeMenu() { nav.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.setAttribute('aria-label', 'Open menu'); }
+menuBtn.addEventListener('click', () => {
+  const open = !nav.classList.contains('menu-open');
+  nav.classList.toggle('menu-open', open);
+  menuBtn.setAttribute('aria-expanded', open);
+  menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+/* =========================================================
+   TOKENIZER DEMO
+   ========================================================= */
+const tokIn = $('#tok-input'), tokOut = $('#tok-out'), tokIds = $('#tok-ids');
+const tCount = $('#tok-count'), tChars = $('#tok-chars'), tRatio = $('#tok-ratio');
+const hash = s => { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) % 50000; };
+function tokenize() {
+  const text = tokIn.value;
+  const toks = text.match(/[A-Za-z]+|\d+|[^\sA-Za-z\d]/g) || [];
+  const frag = document.createDocumentFragment();
+  toks.slice(0, 120).forEach((t, i) => {
+    const s = document.createElement('span');
+    const h = hash(t);
+    s.className = 'tok t' + (h % 6);
+    s.textContent = t;
+    s.title = 'id ' + h;
+    s.style.animationDelay = Math.min(i * 22, 600) + 'ms';
+    frag.appendChild(s);
+  });
+  tokOut.replaceChildren(frag);
+  tokIds.innerHTML = '<b>ids</b> [' + toks.slice(0, 60).map(hash).join(', ') + (toks.length > 60 ? ', …' : '') + ']';
+  tCount.textContent = toks.length;
+  tChars.textContent = text.length;
+  tRatio.textContent = toks.length ? (text.length / toks.length).toFixed(1) : '0';
+}
+let tokTimer;
+tokIn.addEventListener('input', () => { clearTimeout(tokTimer); tokTimer = setTimeout(tokenize, 120); });
+tokenize();
+$('#try-demo').addEventListener('click', e => {
+  e.preventDefault();
+  tokIn.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth', block: 'center' });
+  setTimeout(() => { tokIn.focus({ preventScroll: true }); tokIn.select(); }, reduce ? 0 : 600);
+});
+
+/* =========================================================
+   CONTACT
+   ========================================================= */
+const toast = $('#toast');
+let toastTimer;
+function showToast(msg) {
+  toast.textContent = msg; toast.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+$('#copy-email').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(CONFIG.email); showToast('EMAIL COPIED TO CLIPBOARD'); }
+  catch { showToast(CONFIG.email); }
+});
+$('#contact-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('#f-name').value.trim(), msg = $('#f-msg').value.trim();
+  if (!name || !msg) { showToast('FILL IN BOTH FIELDS'); (name ? $('#f-msg') : $('#f-name')).focus(); return; }
+  const subject = encodeURIComponent('Hello from ' + name);
+  const body = encodeURIComponent(msg + '\n\n— ' + name);
+  window.location.href = `mailto:${CONFIG.email}?subject=${subject}&body=${body}`;
+  showToast('OPENING YOUR MAIL APP…');
+});
+
+})();
+</script>
+</body>
+</html>
